@@ -77,6 +77,13 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/addclass/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await addClassCollection.findOne(query);
+            res.send(result);
+        })
+
         app.post("/addclass", async (req, res) => {
             const add = req.body;
             console.log(add);
@@ -94,6 +101,30 @@ async function run() {
             const result = await addClassCollection.updateOne(filter, updatedDoc);
             res.send(result);
         });
+
+        app.put("/addclass/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true }
+            const updatedClass = req.body;
+            const updatedDoc = {
+                $set: {
+                    title: updatedClass.title,
+                    price: updatedClass.price,
+                    description: updatedClass.description,
+                    image: updatedClass.image,
+                }
+            }
+            const result = await addClassCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        app.delete("/addclass/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await addClassCollection.deleteOne(query);
+            res.send(result);
+        })
 
         app.get("/user", async (req, res) => {
             const result = await userCollection.find().toArray();
