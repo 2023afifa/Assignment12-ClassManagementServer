@@ -227,19 +227,3 @@ app.listen(port, () => {
     console.log(`Class is running on port ${port}`);
 })
 
-
-
-
-
-
-
-
-// if (email !== req.decoded.email) {
-//     return res.status(403).send({ message: "forbidden access" });
-// }
-
-
-// const existingUser = await userCollection.findOne(query);
-// if (existingUser) {
-//     return res.send({ message: "User already exists", insertedId: null })
-// }
