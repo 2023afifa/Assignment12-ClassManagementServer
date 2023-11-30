@@ -26,11 +26,13 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
 
-        await client.connect();
+        // await client.connect();
 
         const userCollection = client.db("ClassDB").collection("user");
         const requestCollection = client.db("ClassDB").collection("request");
         const addClassCollection = client.db("ClassDB").collection("addClass");
+        const enrollCollection = client.db("ClassDB").collection("enroll");
+        const assignmentCollection = client.db("ClassDB").collection("assignment");
 
 
         app.get("/request", async (req, res) => {
@@ -126,6 +128,39 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/enroll", async (req, res) => {
+            const cursor = enrollCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post("/enroll", async (req, res) => {
+            const add = req.body;
+            console.log(add);
+            const result = await enrollCollection.insertOne(add);
+            res.send(result);
+        })
+
+        app.get("/assignment", async (req, res) => {
+            const cursor = assignmentCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get("/assignment/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await assignmentCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.post("/assignment", async (req, res) => {
+            const add = req.body;
+            console.log(add);
+            const result = await assignmentCollection.insertOne(add);
+            res.send(result);
+        })
+
         app.get("/user", async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result);
@@ -133,9 +168,6 @@ async function run() {
 
         app.get("/user/admin/:email", async (req, res) => {
             const email = req.params.email;
-            // if (email !== req.decoded.email) {
-            //     return res.status(403).send({ message: "forbidden access" });
-            // }
             const query = { email: email };
             const user = await userCollection.findOne(query);
             let admin = false;
@@ -148,10 +180,6 @@ async function run() {
         app.post("/user", async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
-            // const existingUser = await userCollection.findOne(query);
-            // if (existingUser) {
-            //     return res.send({ message: "User already exists", insertedId: null })
-            // }
             const result = await userCollection.insertOne(user);
             res.send(result);
         })
@@ -180,8 +208,8 @@ async function run() {
             res.send(result);
         })
 
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
         // await client.close();
@@ -198,3 +226,20 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
     console.log(`Class is running on port ${port}`);
 })
+
+
+
+
+
+
+
+
+// if (email !== req.decoded.email) {
+//     return res.status(403).send({ message: "forbidden access" });
+// }
+
+
+// const existingUser = await userCollection.findOne(query);
+// if (existingUser) {
+//     return res.send({ message: "User already exists", insertedId: null })
+// }
